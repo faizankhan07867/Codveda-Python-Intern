@@ -1,0 +1,26 @@
+# number_guessing.py
+import random
+
+def play(max_attempts=7):
+    number = random.randint(1, 100)
+    print("Guess a number between 1 and 100.")
+    for attempt in range(1, max_attempts + 1):
+        try:
+            guess = int(input(f"Attempt {attempt}/{max_attempts}: ").strip())
+        except ValueError:
+            print("Enter an integer.")
+            continue
+        if guess == number:
+            print(f"Correct! You guessed it in {attempt} attempts.")
+            return
+        elif guess < number:
+            print("Too low.")
+        else:
+            print("Too high.")
+    print(f"Out of attempts. The number was {number}.")
+
+if __name__ == "__main__":
+    play()
+
+
+#Run: python number_guessing.py
