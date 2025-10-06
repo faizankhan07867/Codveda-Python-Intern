@@ -1,0 +1,88 @@
+# todo_cli.py
+import json
+import os
+import sys
+
+DB_FILE = "todos.json"
+
+def load_tasks():
+    if not os.path.exists(DB_FILE):
+        return []
+    with open(DB_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_tasks(tasks):
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(tasks, f, indent=2)
+
+def list_tasks(tasks):
+    if not tasks:
+        print("No tasks.")
+        return
+    for i, t in enumerate(tasks, start=1):
+        status = "✔" if t.get("done") else " "
+        print(f"{i}. [{status}] {t['title']}")
+
+def add_task(title):
+    tasks = load_tasks()
+    tasks.append({"title": title, "done": False})
+    save_tasks(tasks)
+    print("Added:", title)
+
+def delete_task(index):
+    tasks = load_tasks()
+    if index < 1 or index > len(tasks):
+        print("Invalid task number.")
+        return
+    removed = tasks.pop(index - 1)
+    save_tasks(tasks)
+    print("Deleted:", removed['title'])
+
+def mark_done(index):
+    tasks = load_tasks()
+    if index < 1 or index > len(tasks):
+        print("Invalid task number.")
+        return
+    tasks[index - 1]["done"] = True
+    save_tasks(tasks)
+    print("Marked done:", tasks[index - 1]["title"])
+
+def usage():
+    print("Usage:")
+    print("  python todo_cli.py list")
+    print("  python todo_cli.py add \"Task title\"")
+    print("  python todo_cli.py del <task_number>")
+    print("  python todo_cli.py done <task_number>")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        usage()
+        sys.exit(1)
+    cmd = sys.argv[1].lower()
+    if cmd == "list":
+        list_tasks(load_tasks())
+    elif cmd == "add" and len(sys.argv) >= 3:
+        add_task(" ".join(sys.argv[2:]))
+    elif cmd == "del" and len(sys.argv) == 3:
+        try:
+            delete_task(int(sys.argv[2]))
+        except ValueError:
+            print("Provide a number.")
+    elif cmd == "done" and len(sys.argv) == 3:
+        try:
+            mark_done(int(sys.argv[2]))
+        except ValueError:
+            print("Provide a number.")
+    else:
+        usage()
+
+
+#Run:
+
+python todo_cli.py add "Buy groceries"
+
+python todo_cli.py list
+
+python todo_cli.py done 1
+
+python todo_cli.py del 1
