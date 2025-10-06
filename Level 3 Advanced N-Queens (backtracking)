@@ -1,0 +1,44 @@
+# nqueens.py
+def solve_n_queens(n):
+    solutions = []
+    cols = set()
+    diag1 = set()  # r - c
+    diag2 = set()  # r + c
+    board = [-1] * n
+
+    def backtrack(row=0):
+        if row == n:
+            # build board representation
+            sol = []
+            for r in range(n):
+                row_str = ["." for _ in range(n)]
+                row_str[board[r]] = "Q"
+                sol.append("".join(row_str))
+            solutions.append(sol)
+            return
+        for col in range(n):
+            if col in cols or (row - col) in diag1 or (row + col) in diag2:
+                continue
+            board[row] = col
+            cols.add(col); diag1.add(row - col); diag2.add(row + col)
+            backtrack(row + 1)
+            cols.remove(col); diag1.remove(row - col); diag2.remove(row + col)
+            board[row] = -1
+
+    backtrack()
+    return solutions
+
+if __name__ == "__main__":
+    n = int(input("Enter N: ").strip())
+    sols = solve_n_queens(n)
+    print(f"Found {len(sols)} solutions for N={n}")
+    # print first solution nicely
+    if sols:
+        for line in sols[0]:
+            print(line)
+
+
+
+
+
+#Run: python nqueens.py
