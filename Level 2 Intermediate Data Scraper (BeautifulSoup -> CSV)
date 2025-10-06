@@ -1,0 +1,35 @@
+# scraper.py
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+URL = "https://news.ycombinator.com/"  # example site - change to permitted target
+
+def scrape_hackernews_top(n=10):
+    r = requests.get(URL, timeout=10)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    rows = soup.select(".athing")[:n]
+    results = []
+    for row in rows:
+        title = row.select_one(".titleline").get_text(strip=True)
+        link_tag = row.select_one(".titleline a")
+        link = link_tag['href'] if link_tag else ""
+        results.append({"title": title, "link": link})
+    return results
+
+def save_to_csv(items, filename="scraped.csv"):
+    keys = items[0].keys() if items else []
+    with open(filename, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=keys)
+        writer.writeheader()
+        writer.writerows(items)
+    print("Saved to", filename)
+
+if __name__ == "__main__":
+    items = scrape_hackernews_top(20)
+    save_to_csv(items)
+
+
+
+#Run: python api_integration.py
