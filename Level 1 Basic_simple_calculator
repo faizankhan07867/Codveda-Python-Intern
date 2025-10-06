@@ -1,0 +1,43 @@
+#Simple Calculator
+
+
+
+# simple_calculator.py
+def add(a, b): return a + b
+def sub(a, b): return a - b
+def mul(a, b): return a * b
+def div(a, b):
+    if b == 0:
+        raise ZeroDivisionError("Cannot divide by zero.")
+    return a / b
+
+def main():
+    print("Simple Calculator")
+    try:
+        a = float(input("Enter first number: ").strip())
+        b = float(input("Enter second number: ").strip())
+    except ValueError:
+        print("Invalid number entered.")
+        return
+
+    print("Choose operation: +  -  *  /")
+    op = input("Operation: ").strip()
+    try:
+        if op == "+":
+            print("Result:", add(a, b))
+        elif op == "-":
+            print("Result:", sub(a, b))
+        elif op == "*" or op.lower() == "x":
+            print("Result:", mul(a, b))
+        elif op == "/":
+            print("Result:", div(a, b))
+        else:
+            print("Unknown operation.")
+    except ZeroDivisionError as e:
+        print("Error:", e)
+
+if __name__ == "__main__":
+    main()
+
+
+##  Run: python number_guessing.py
