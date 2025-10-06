@@ -1,0 +1,94 @@
+Steps (commands)
+# create virtual env
+python -m venv venv
+source venv/bin/activate      # or venv\Scripts\activate on Windows
+pip install django
+django-admin startproject mysite
+cd mysite
+python manage.py startapp main
+
+settings.py (important additions)
+
+Add 'main' and templates & email backend for password reset (for dev):
+
+# settings.py (snippet)
+INSTALLED_APPS += ["main", "django.contrib.humanize"]
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend"]
+
+# For templates, ensure DIRS includes os.path.join(BASE_DIR, "templates")
+# For dev password reset:
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+urls.py (project)
+# mysite/urls.py
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import TemplateView
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),  # login/logout/password reset
+    path("", include("main.urls")),
+]
+
+
+Django's django.contrib.auth.urls provides routes for:
+
+login (/accounts/login/)
+
+logout (/accounts/logout/)
+
+password_change, password_reset, etc.
+
+main/urls.py
+# main/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.home, name="home"),
+    path("register/", views.register, name="register"),
+]
+
+main/views.py (register + home)
+# main/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+def home(request):
+    return render(request, "home.html")
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("home")
+    else:
+        form = UserCreationForm()
+    return render(request, "register.html", {"form": form})
+
+Templates
+
+Create templates/register.html, templates/home.html, and ensure login template at registration/login.html. Use Django template tags for forms. Example minimal register.html:
+
+<!-- templates/register.html -->
+<h2>Register</h2>
+<form method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Register</button>
+</form>
+
+Run
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+
+
+This gives registration, login/logout, and password reset (emails printed to console in dev). For production, configure real email backend and add roles/permissions with Django Groups.
+
+
+
+
