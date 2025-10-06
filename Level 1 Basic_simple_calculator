@@ -40,4 +40,4 @@ if __name__ == "__main__":
     main()
 
 
-##  Run: python number_guessing.py
+##  Run: python simple_calculator.py
