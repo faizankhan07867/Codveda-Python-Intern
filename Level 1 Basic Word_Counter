@@ -1,0 +1,22 @@
+# word_counter.py
+import sys
+
+def count_words(path):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except FileNotFoundError:
+        print("File not found:", path)
+        return
+    words = text.split()  # simple splitting on whitespace
+    print(f"Word count for '{path}': {len(words)}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python word_counter.py <filename>")
+    else:
+        count_words(sys.argv[1])
+
+
+
+#Run: python word_counter.py sample.txt
