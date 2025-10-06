@@ -32,4 +32,4 @@ if __name__ == "__main__":
 
 
 
-#Run: python api_integration.py
+#Run: python scraper.py — output scraped.csv.
