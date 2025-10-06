@@ -1,0 +1,59 @@
+# encrypt_file.py
+import sys
+from cryptography.fernet import Fernet
+
+def generate_key(path="secret.key"):
+    key = Fernet.generate_key()
+    with open(path, "wb") as f:
+        f.write(key)
+    print("Key saved to", path)
+
+def load_key(path="secret.key"):
+    with open(path, "rb") as f:
+        return f.read()
+
+def encrypt_file(infile, outfile, key_path="secret.key"):
+    key = load_key(key_path)
+    f = Fernet(key)
+    with open(infile, "rb") as f_in:
+        data = f_in.read()
+    token = f.encrypt(data)
+    with open(outfile, "wb") as f_out:
+        f_out.write(token)
+    print("Encrypted to", outfile)
+
+def decrypt_file(infile, outfile, key_path="secret.key"):
+    key = load_key(key_path)
+    f = Fernet(key)
+    with open(infile, "rb") as f_in:
+        token = f_in.read()
+    data = f.decrypt(token)
+    with open(outfile, "wb") as f_out:
+        f_out.write(data)
+    print("Decrypted to", outfile)
+
+if __name__ == "__main__":
+    # simple CLI
+    if len(sys.argv) < 2:
+        print("Usage: python encrypt_file.py genkey|encrypt|decrypt ...")
+    else:
+        cmd = sys.argv[1]
+        if cmd == "genkey":
+            generate_key(sys.argv[2] if len(sys.argv) > 2 else "secret.key")
+        elif cmd == "encrypt" and len(sys.argv) >= 4:
+            encrypt_file(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv)>4 else "secret.key")
+        elif cmd == "decrypt" and len(sys.argv) >= 4:
+            decrypt_file(sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv)>4 else "secret.key")
+        else:
+            print("Invalid arguments.")
+
+
+
+
+#Usage:
+
+python encrypt_file.py genkey secret.key
+
+python encrypt_file.py encrypt plain.txt encrypted.bin secret.key
+
+python encrypt_file.py decrypt encrypted.bin plain_decrypted.txt secret.key
